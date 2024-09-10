@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+	<title>Suma</title>
+  <head>
+    <script type="text/javascript">
+       var val1,val2,val3,val4,suma,count=0;
+       //Se ejecuta primero
+       agregarEvento(window,'load',cargar,false);
+       function agregarEvento(ele,eve,fun,cap){
+         //Depende del navegador para que se ejecuta if o else    
+
+         if(window.attachEvent){	 // Detecta navegador y versión.
+            addAttachEvent('on'+eve,fun);			 
+	       } 
+	       else{
+
+	          ele.addEventListener(eve,fun,cap); 
+                                          	 
+	       }
+       	 /*Al terminar la funciòn agregar evento, 
+           Inmediatamente se llama a la función cargar() porque ya se
+           cargo la ventana del navegador.
+         */     
+        }
+        function cargar(){
+          
+           alert("Hola");
+           //Llamar a la funciòn agregarEvento.            
+	         agregarEvento(document.getElementById("btsumar"),'click',leerValores,false);
+            agregarEvento(document.getElementById("v1"),'keypress',validarNumeros,false);
+            agregarEvento(document.getElementById("v2"),'keypress',validarNumeros,false);
+            agregarEvento(document.getElementById("v3"),'keypress',validarNumeros,false);
+            agregarEvento(document.getElementById("v4"),'keypress',validarNumeros,false);
+           
+       }  
+       function leerValores(){                    
+          val1=parseInt(document.getElementById("v1").value);
+          val2=parseInt(document.getElementById("v2").value);
+          val3=parseInt(document.getElementById("v3").value);
+          val4=parseInt(document.getElementById("v4").value);
+          enviarValoresServidor();
+          //alert("Termina la función leer valores");
+       }              	  
+       function enviarValoresServidor(){ //Su propósito  es:Crear un objeto Ajax para asi poder 
+                                         //Solicitarle al servidor que realice una tarea.
+        
+           conexion = xmlhttprequest();
+	         conexion.onreadystatechange = esperaResultado; //onreadystatechange es un atributo
+          //al cual se le asocia el nombre de una función que se ejecuta varias veces hasta que la 
+          //información solicitada esta lista en el servidor.
+           
+	         conexion.open("POST","sumar_valores.php",true);//Abre un archivo php y ejecuta su código.
+	         conexion.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+           //Tipo de aplicación que debe abrir el servidor 
+           
+	         conexion.send("v1="+val1+"&v2="+val2+"&v3="+val3+"&v4="+val4);//Valores que se envian al servidor para ser 
+           //ocupados en el archivo sumar_valores.php
+       }
+       function esperaResultado(){
+
+              count++;
+              alert(count);
+              if(conexion.readyState == 4){//Cuando el atributo readyState vale 4 es porque el servidor 
+                //Ya tiene lista la información que solicitamos.
+		             //var dato = eval('('+conexion.responseText+')');  // responseText devuelve la información solicitada
+                 //Función eval : texto="2+34" 
+                 var dato = conexion.responseText;
+                 document.getElementById("resultado").value=dato;     
+                 //count=0;
+
+              }  
+
+       } 
+       function xmlhttprequest(){
+           return new XMLHttpRequest();//Objeto de javascript, tiene varios métodos, por ejemplo send()
+       }
+      
+       function validarNumeros(e){
+          var codigo=e.KeyCode || e.which;
+          if(!Numero(codigo)){
+             e.returnValue=false;
+             if(e.preventDefault)
+              e.preventDefault();
+          }
+         }
+          function Numero(codigo){
+          if(codigo>=48 && codigo<=57);
+          
+       }
+        	            	      
+    </script>
+</head>
+<body>
+   <form name="frmsuma"> 		   			   		   
+      Valor 1:<input type="text" name="txtvalor1" id="v1"><br>
+      Valor 2:<input type="text" name="txtvalor2" id="v2"><br>
+      Valor 3:<input type="text" name="txtvalor3" id="v3"><br>
+      Valor 4:<input type="text" name="txtvalor4" id="v4"><br>
+              <input type="button" value="Enviar valores" id="btsumar"><br>  
+      Resultado:<input type="text" name="txtres" id="resultado">           		   	               
+  </form>	
+</body>
+</html>
